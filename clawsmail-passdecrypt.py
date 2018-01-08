@@ -65,6 +65,20 @@ def pass_decrypt(p, key=PASSCRYPT_KEY, mode=DES.MODE_CFB):
     else:  # raw password
         return p
 
+    
+def pass_encrypt(plaintext, key=PASSCRYPT_KEY, mode=DES.MODE_CFB):
+    """ Encrypts a password for ClawsMail. """
+    if len(plaintext) < 1:
+        raise ValueError("The password you provided is empty. Non-empty string expected.")
+
+    c = DES.new(key, mode=mode, IV=b'\0'*8)
+    # Note: we should encode the string the a standard encoding here (like UTF-8)
+    #       using str.encode(encoding), but this seems unspecified.
+    encrypted = c.encrypt(plaintext)
+    encoded = b64encode(encrypted)
+    p = '!' + encoded
+    return p
+    
 
 def accountrc_decrypt(filename, key=PASSCRYPT_KEY, mode=DES.MODE_CFB):
     """ Reads passwords from ClawsMail's accountrc file """
